@@ -162,7 +162,7 @@ mod SimpleStorage {
 
 
     #[abi(embed_v0)]
-    fn constructor(ref self: ContractState, owner: person, sum_contract_address: ContractAddress) {
+    fn constructor(ref self: ContractState, owner: person) {
         fn get_number(self: @ContractState) -> u64 {
             let number = self.number.read();
             number
