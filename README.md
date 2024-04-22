@@ -108,7 +108,7 @@ Here we add a new srorage variable to our storage struct, we add events and a co
 - We initialize the operations_counter to 1
 - We map the our owner address to 0, which is the first number. The owner is also the first address
 - We go back to our generate trait and add the 'user' variable, that was defined in our person struct.
-- In generate_trait, ``ùser```is used as a key in the LegacyMap named number
+- In generate_trait, ```user```is used as a key in the LegacyMap named number
  
 
 
