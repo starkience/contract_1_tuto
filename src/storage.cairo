@@ -2,7 +2,7 @@ use starknet::ContractAddress;
 
 #[starknet::interface]
 trait ISimpleStorage<TContractState> {
-    fn get_number(self: @TContractState) -> u64;
+    fn get_number(self: @TContractState,address: ContractAddress) -> u64;
     fn store_number(ref self: TContractState, number: u64);
 }
 
@@ -14,13 +14,41 @@ mod SimpleStorage {
     #[storage]
     struct Storage {
         number: LegacyMap::<ContractAddress, u64>,
+        owner: person,
         operations_counter: u128,
     }
 
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        StoredNumber: StoredNumber,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct StoredNumber {
+        #[key]
+        user: ContractAddress,
+        number: u64,
+    }
+
+    #[derive(Copy, Drop, Serde, starknet::Store)]
+    struct person {
+        name: felt252,
+        address: ContractAddress,
+    }
+
+    #[constructor]
+    fn constructor(ref self: ContractState, owner: person) {
+        self.owner.write(owner); // Person object and written into the contract's storage
+        self.number.write(owner.address, 0);
+        self.operations_counter.write(1);
+    }
+
+
     #[abi(embed_v0)]
     impl SimpleStorage of super::ISimpleStorage<ContractState> {
-        fn get_number(self: @ContractState) -> u64 {
-            let number = self.number.read();
+        fn get_number(self: @ContractState, address: ContractAddress) -> u64 {
+            let number = self.number.read(address);
             number
         }
 
@@ -33,10 +61,11 @@ mod SimpleStorage {
 
     #[generate_trait]
     impl Private of PrivateTrait {
-        fn _store_number(ref self: ContractState, number: u64) {
-            let operations_counter = self.operations_counter.read();
-            self.number.write(number);
-            self.operations_counter.write(operations_counter + 1);
+        fn _store_number(ref self: ContractState, user: ContractAddress, number: u64) {
+            let operation_counter = self.operation_counter.read();
+            self.number.write(user, number);
+            self.operation_counter.write(operation_counter + 1);
+            self.emit(StoredNumber { user: user, number: number });
         }
     }
 }
