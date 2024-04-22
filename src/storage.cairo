@@ -10,12 +10,16 @@ trait ISimpleStorage<TContractState> {
 mod SimpleStorage {
     use starknet::get_caller_address; // 
     use starknet::ContractAddress;
+    use storage4::sum::{ISumDispatcherTrait, ISumDispatcher};
+
 
     #[storage]
     struct Storage {
         number: LegacyMap::<ContractAddress, u64>,
         owner: person,
         operations_counter: u128,
+        sum_contract: ISumDispatcher,
+
     }
 
     #[event]
@@ -38,10 +42,11 @@ mod SimpleStorage {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, owner: person) {
+    fn constructor(ref self: ContractState, owner: person, sum_contract_address: ContractAddress) {
         self.owner.write(owner); // Person object and written into the contract's storage
         self.number.write(owner.address, 0);
         self.operations_counter.write(1);
+         self.sum_contract.write(ISumDispatcher { contract_address: sum_contract_address }) // initialize dispatcher
     }
 
 
@@ -52,10 +57,11 @@ mod SimpleStorage {
             number
         }
 
-        fn store_number(ref self: TContractState, number: u64) {
+       fn store_number(ref self: ContractState, number: u64) {
             let caller = get_caller_address();
-            self.number.write(number);
-            self._store_number(caller);
+            let sum_contract = self.sum_contract.read();
+            let sum = sum_contract.increment(number); //dispatcher call
+            self._store_number(caller, sum);
         }
     }
 
