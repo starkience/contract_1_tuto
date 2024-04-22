@@ -118,7 +118,7 @@ use starknet::ContractAddress;
 
 #[starknet::interface]
 trait ISimpleStorage<TContractState> {
-    fn get_number(self: @TContractState, address: ContractAddress) -> u64;
+    fn get_number(self: @TContractState,address: ContractAddress) -> u64;
     fn store_number(ref self: TContractState, number: u64);
 }
 
@@ -154,7 +154,7 @@ mod SimpleStorage {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, ) {
+    fn constructor(ref self: ContractState, owner: person) {
         self.owner.write(owner); // Person object and written into the contract's storage
         self.number.write(owner.address, 0);
         self.operations_counter.write(1);
@@ -162,9 +162,9 @@ mod SimpleStorage {
 
 
     #[abi(embed_v0)]
-    fn constructor(ref self: ContractState, owner: person) {
-        fn get_number(self: @ContractState) -> u64 {
-            let number = self.number.read();
+    impl SimpleStorage of super::ISimpleStorage<ContractState> {
+        fn get_number(self: @ContractState, address: ContractAddress) -> u64 {
+            let number = self.number.read(address);
             number
         }
 
@@ -185,4 +185,6 @@ mod SimpleStorage {
         }
     }
 }
+
+
 ```
