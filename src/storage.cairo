@@ -10,7 +10,7 @@ trait ISimpleStorage<TContractState> {
 mod SimpleStorage {
     use starknet::get_caller_address; // 
     use starknet::ContractAddress;
-    use storage4::sum::{ISumDispatcherTrait, ISumDispatcher};
+    use contract_1::sum::{ISumDispatcherTrait, ISumDispatcher};
 
 
     #[storage]
@@ -68,9 +68,9 @@ mod SimpleStorage {
     #[generate_trait]
     impl Private of PrivateTrait {
         fn _store_number(ref self: ContractState, user: ContractAddress, number: u64) {
-            let operation_counter = self.operation_counter.read();
+            let operations_counter = self.operations_counter.read();
             self.number.write(user, number);
-            self.operation_counter.write(operation_counter + 1);
+            self.operations_counter.write(operations_counter + 1);
             self.emit(StoredNumber { user: user, number: number });
         }
     }
