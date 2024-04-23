@@ -74,7 +74,7 @@ mod SimpleStorage {
 
     #[abi(embed_v0)]
     impl SimpleStorage of super::ISimpleStorage<ContractState> {
-        fn get_number(self: @ContractState) -> u64 {
+        fn get_number(self: @ContractState, address: ContractAddress) -> u64 {
             let number = self.number.read();
             number
         }
