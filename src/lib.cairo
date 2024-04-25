@@ -1,2 +1,2 @@
 mod storage;
-mod sum;
+mod magic_value;
