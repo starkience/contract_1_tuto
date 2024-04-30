@@ -21,7 +21,6 @@ mod magic_value {
     impl Magic of super::IMagic<ContractState> {
         fn increment_magic(ref self: ContractState, incr_value: u64) {
             self.magic_value.write(self.magic_value.read() + incr_value);
-
         }
 
         fn get_magic(self: @ContractState) -> u64 {
