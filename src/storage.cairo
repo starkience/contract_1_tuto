@@ -2,7 +2,7 @@ use starknet::ContractAddress;
 
 #[starknet::interface]
 trait ISimpleStorage<TContractState> {
-    fn get_number(self: @TContractState,address: ContractAddress) -> u64;
+    fn get_number(self: @TContractState, address: ContractAddress) -> u64;
     fn store_number(ref self: TContractState, number: u64);
 }
 
