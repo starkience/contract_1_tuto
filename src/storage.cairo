@@ -1,13 +1,13 @@
 use starknet::ContractAddress;
 
 #[starknet::interface]
-trait ISimpleStorage<TContractState> {
+trait IStorage<TContractState> {
     fn get_number(self: @TContractState, address: ContractAddress) -> u64;
     fn store_magic(ref self: TContractState, number: u64);
 }
 
 #[starknet::contract] // we add an attribure to define a module as a Starknet contract, this module tells the compiler this code is meant to run on Starknet. We also use modules to make a clear distinction between different components of the contract, such as its storage variables, the constructor, external functions and events.
-mod SimpleStorage {
+mod Storage {
     use starknet::get_caller_address;
     use starknet::ContractAddress;
     use contract_1::magic_value::{IMagicDispatcherTrait, IMagicDispatcher};
@@ -54,7 +54,7 @@ mod SimpleStorage {
 
 
     #[abi(embed_v0)]
-    impl SimpleStorage of super::ISimpleStorage<ContractState> {
+    impl Storage of super::IStorage<ContractState> {
         fn get_number(self: @ContractState, address: ContractAddress) -> u64 {
             let number = self.numbers.read(address);
             number
